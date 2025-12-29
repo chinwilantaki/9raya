@@ -1,0 +1,1 @@
+ C:\\Users\\young\ vamp\\app\ dzebi\\lib\\l10n\\app_localizations_en.dart C:\\Users\\young\ vamp\\app\ dzebi\\lib\\l10n\\app_localizations_fr.dart C:\\Users\\young\ vamp\\app\ dzebi\\lib\\l10n\\app_localizations.dart:  C:\\Users\\young\ vamp\\app\ dzebi\\l10n.yaml C:\\Users\\young\ vamp\\app\ dzebi\\lib\\l10n\\app_en.arb C:\\Users\\young\ vamp\\app\ dzebi\\lib\\l10n\\app_fr.arb

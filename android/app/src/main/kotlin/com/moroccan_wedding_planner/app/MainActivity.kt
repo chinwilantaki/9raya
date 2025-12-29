@@ -1,0 +1,7 @@
+package com.moroccan_wedding_planner.app
+
+import io.flutter.embedding.android.FlutterFragmentActivity
+import io.flutter.plugins.GeneratedPluginRegistrant
+
+class MainActivity: FlutterFragmentActivity() {
+}
