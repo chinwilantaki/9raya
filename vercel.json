@@ -1,7 +1,6 @@
 {
-  "buildCommand": "flutter build web --release",
+  "buildCommand": "flutter build web",
   "outputDirectory": "build/web",
-  "framework": null,
   "routes": [
     { "src": "/(.*)", "dest": "/index.html" }
   ]
