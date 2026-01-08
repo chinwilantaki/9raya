@@ -15,16 +15,42 @@ if ! command -v flutter &> /dev/null; then
   
   if [ ! -d "$FLUTTER_DIR" ]; then
     echo "📥 Cloning Flutter from GitHub..."
-    git clone --depth 1 --branch $FLUTTER_VERSION https://github.com/flutter/flutter.git $FLUTTER_DIR || {
-      echo "❌ Failed to clone Flutter. Trying master branch..."
-      git clone --depth 1 https://github.com/flutter/flutter.git $FLUTTER_DIR
-    }
+    # Try to clone Flutter
+    if command -v git &> /dev/null; then
+      git clone --depth 1 --branch $FLUTTER_VERSION https://github.com/flutter/flutter.git $FLUTTER_DIR 2>&1 || {
+        echo "⚠️ Failed to clone with branch $FLUTTER_VERSION, trying master..."
+        git clone --depth 1 https://github.com/flutter/flutter.git $FLUTTER_DIR 2>&1 || {
+          echo "❌ Git clone failed. Trying wget method..."
+          # Fallback: Download Flutter SDK archive
+          FLUTTER_VERSION_NUM="${FLUTTER_VERSION:-3.24.0}"
+          cd /tmp
+          wget -q "https://storage.googleapis.com/flutter_infra_release/releases/stable/linux/flutter_linux_${FLUTTER_VERSION_NUM}-stable.tar.xz" -O flutter.tar.xz || {
+            echo "❌ Failed to download Flutter SDK"
+            exit 1
+          }
+          tar xf flutter.tar.xz
+          rm flutter.tar.xz
+        }
+      }
+    else
+      echo "❌ Git not available. Installing via wget..."
+      FLUTTER_VERSION_NUM="${FLUTTER_VERSION:-3.24.0}"
+      cd /tmp
+      wget -q "https://storage.googleapis.com/flutter_infra_release/releases/stable/linux/flutter_linux_${FLUTTER_VERSION_NUM}-stable.tar.xz" -O flutter.tar.xz || {
+        echo "❌ Failed to download Flutter SDK"
+        exit 1
+      }
+      tar xf flutter.tar.xz
+      rm flutter.tar.xz
+    fi
   else
     echo "🔄 Updating existing Flutter installation..."
     cd $FLUTTER_DIR
-    git fetch origin $FLUTTER_VERSION || git fetch origin master
-    git checkout $FLUTTER_VERSION || git checkout master
-    git pull || true
+    if command -v git &> /dev/null; then
+      git fetch origin $FLUTTER_VERSION 2>&1 || git fetch origin master 2>&1 || true
+      git checkout $FLUTTER_VERSION 2>&1 || git checkout master 2>&1 || true
+      git pull 2>&1 || true
+    fi
   fi
   
   export PATH="$PATH:$FLUTTER_DIR/bin"
