@@ -2,6 +2,8 @@
 set -e
 
 echo "🚀 Starting Flutter web build on Netlify..."
+echo "📁 Current directory: $(pwd)"
+echo "📁 NETLIFY_BUILD_BASE: ${NETLIFY_BUILD_BASE:-not set}"
 
 # Install Flutter if not already installed
 if ! command -v flutter &> /dev/null; then
@@ -12,38 +14,76 @@ if ! command -v flutter &> /dev/null; then
   FLUTTER_DIR="/tmp/flutter"
   
   if [ ! -d "$FLUTTER_DIR" ]; then
-    git clone --depth 1 --branch $FLUTTER_VERSION https://github.com/flutter/flutter.git $FLUTTER_DIR
+    echo "📥 Cloning Flutter from GitHub..."
+    git clone --depth 1 --branch $FLUTTER_VERSION https://github.com/flutter/flutter.git $FLUTTER_DIR || {
+      echo "❌ Failed to clone Flutter. Trying master branch..."
+      git clone --depth 1 https://github.com/flutter/flutter.git $FLUTTER_DIR
+    }
   else
+    echo "🔄 Updating existing Flutter installation..."
     cd $FLUTTER_DIR
-    git fetch origin $FLUTTER_VERSION
-    git checkout $FLUTTER_VERSION
-    git pull
+    git fetch origin $FLUTTER_VERSION || git fetch origin master
+    git checkout $FLUTTER_VERSION || git checkout master
+    git pull || true
   fi
   
   export PATH="$PATH:$FLUTTER_DIR/bin"
   
+  # Verify Flutter is accessible
+  if ! command -v flutter &> /dev/null; then
+    echo "❌ Flutter not found in PATH after installation"
+    echo "PATH: $PATH"
+    exit 1
+  fi
+  
+  echo "✅ Flutter installed successfully"
+  
   # Precache web dependencies
-  flutter precache --web
+  echo "📦 Precaching Flutter web dependencies..."
+  flutter precache --web || echo "⚠️ Precaching failed, continuing..."
 fi
 
 # Navigate to project directory
-cd "$NETLIFY_BUILD_BASE" || cd /opt/build/repo || pwd
+PROJECT_DIR="${NETLIFY_BUILD_BASE:-/opt/build/repo}"
+echo "📂 Navigating to project directory: $PROJECT_DIR"
+cd "$PROJECT_DIR" || {
+  echo "❌ Failed to navigate to project directory"
+  echo "Current directory: $(pwd)"
+  exit 1
+}
 
 # Verify Flutter installation
 echo "✅ Flutter version:"
-flutter --version
+flutter --version || {
+  echo "❌ Flutter command failed"
+  exit 1
+}
 
 # Get Flutter dependencies
 echo "📚 Getting Flutter dependencies..."
-flutter pub get
+flutter pub get || {
+  echo "❌ Failed to get Flutter dependencies"
+  exit 1
+}
 
 # Generate localization files
 echo "🌐 Generating localization files..."
-flutter gen-l10n || echo "⚠️ Localization generation skipped"
+flutter gen-l10n || {
+  echo "⚠️ Localization generation failed, but continuing..."
+}
 
 # Build Flutter web
 echo "🔨 Building Flutter web app..."
-flutter build web --release
+flutter build web --release || {
+  echo "❌ Flutter build failed"
+  echo "Checking for build errors..."
+  flutter doctor -v
+  exit 1
+}
 
 echo "✅ Build completed successfully!"
-ls -la build/web/
+echo "📦 Build output:"
+ls -la build/web/ || {
+  echo "❌ Build output directory not found"
+  exit 1
+}
