@@ -7,27 +7,30 @@ echo "🚀 Starting Flutter web build on Netlify..."
 if ! command -v flutter &> /dev/null; then
   echo "📦 Installing Flutter SDK..."
   
-  # Download and install Flutter
-  FLUTTER_VERSION="${FLUTTER_VERSION:-3.24.0}"
-  FLUTTER_SDK="flutter_linux_${FLUTTER_VERSION}-stable.tar.xz"
+  # Use git to clone Flutter (more reliable than downloading archives)
+  FLUTTER_VERSION="${FLUTTER_VERSION:-stable}"
+  FLUTTER_DIR="/tmp/flutter"
   
-  cd /tmp
-  wget -q "https://storage.googleapis.com/flutter_infra_release/releases/stable/linux/${FLUTTER_SDK}" || \
-  wget -q "https://storage.googleapis.com/flutter_infra_release/releases/stable/linux/flutter_linux_${FLUTTER_VERSION}-stable.tar.xz"
+  if [ ! -d "$FLUTTER_DIR" ]; then
+    git clone --depth 1 --branch $FLUTTER_VERSION https://github.com/flutter/flutter.git $FLUTTER_DIR
+  else
+    cd $FLUTTER_DIR
+    git fetch origin $FLUTTER_VERSION
+    git checkout $FLUTTER_VERSION
+    git pull
+  fi
   
-  tar xf flutter_linux_${FLUTTER_VERSION}-stable.tar.xz || \
-  tar xf "flutter_linux_${FLUTTER_VERSION}-stable.tar.xz"
+  export PATH="$PATH:$FLUTTER_DIR/bin"
   
-  export PATH="$PATH:/tmp/flutter/bin"
-  
-  # Accept licenses
-  flutter doctor --android-licenses || true
+  # Precache web dependencies
+  flutter precache --web
 fi
 
 # Navigate to project directory
-cd "$NETLIFY_BUILD_BASE" || cd /opt/build/repo
+cd "$NETLIFY_BUILD_BASE" || cd /opt/build/repo || pwd
 
 # Verify Flutter installation
+echo "✅ Flutter version:"
 flutter --version
 
 # Get Flutter dependencies
@@ -36,7 +39,7 @@ flutter pub get
 
 # Generate localization files
 echo "🌐 Generating localization files..."
-flutter gen-l10n
+flutter gen-l10n || echo "⚠️ Localization generation skipped"
 
 # Build Flutter web
 echo "🔨 Building Flutter web app..."
