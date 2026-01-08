@@ -8,6 +8,7 @@ import 'package:sizer/sizer.dart';
 import '../core/app_export.dart';
 import '../l10n/app_localizations.dart';
 import '../providers/locale_provider.dart';
+import '../providers/country_provider.dart';
 import '../widgets/custom_error_widget.dart';
 
 void main() async {
@@ -15,6 +16,7 @@ void main() async {
 
   final prefs = await SharedPreferences.getInstance();
   final languageCode = prefs.getString('languageCode') ?? 'en';
+  final selectedCountry = await CountryProvider.getSavedCountry();
 
   bool _hasShownError = false;
 
@@ -37,8 +39,15 @@ void main() async {
   await SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
 
   runApp(
-    ChangeNotifierProvider(
-      create: (context) => LocaleProvider(Locale(languageCode)),
+    MultiProvider(
+      providers: [
+        ChangeNotifierProvider(
+          create: (context) => LocaleProvider(Locale(languageCode)),
+        ),
+        ChangeNotifierProvider(
+          create: (context) => CountryProvider(selectedCountry),
+        ),
+      ],
       child: MyApp(),
     ),
   );
@@ -47,26 +56,27 @@ void main() async {
 class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    final localeProvider = Provider.of<LocaleProvider>(context);
-
-    return Sizer(
-      builder: (context, orientation, screenType) {
-        return MaterialApp(
-          onGenerateTitle: (context) => AppLocalizations.of(context)!.appTitle,
-          theme: AppTheme.lightTheme,
-          darkTheme: AppTheme.darkTheme,
-          themeMode: ThemeMode.light,
-          locale: localeProvider.locale,
-          localizationsDelegates: const [
-            AppLocalizations.delegate,
-            GlobalMaterialLocalizations.delegate,
-            GlobalWidgetsLocalizations.delegate,
-            GlobalCupertinoLocalizations.delegate,
-          ],
-          supportedLocales: const [
-            Locale('en'), // English
-            Locale('fr'), // French
-          ],
+    return Consumer<LocaleProvider>(
+      builder: (context, localeProvider, child) {
+        return Sizer(
+          builder: (context, orientation, screenType) {
+            return MaterialApp(
+              onGenerateTitle: (context) => AppLocalizations.of(context)!.appTitle,
+              theme: AppTheme.lightTheme,
+              darkTheme: AppTheme.darkTheme,
+              themeMode: ThemeMode.light,
+              locale: localeProvider.locale,
+              localizationsDelegates: const [
+                AppLocalizations.delegate,
+                GlobalMaterialLocalizations.delegate,
+                GlobalWidgetsLocalizations.delegate,
+                GlobalCupertinoLocalizations.delegate,
+              ],
+              supportedLocales: const [
+                Locale('en'), // English
+                Locale('fr'), // French
+                Locale('ar'), // Arabic
+              ],
           // 🚨 CRITICAL: NEVER REMOVE OR MODIFY
           builder: (context, child) {
             return MediaQuery(
@@ -77,9 +87,11 @@ class MyApp extends StatelessWidget {
             );
           },
           // 🚨 END CRITICAL SECTION
-          debugShowCheckedModeBanner: false,
-          routes: AppRoutes.routes,
-          initialRoute: AppRoutes.initial,
+              debugShowCheckedModeBanner: false,
+              routes: AppRoutes.routes,
+              initialRoute: AppRoutes.initial,
+            );
+          },
         );
       },
     );

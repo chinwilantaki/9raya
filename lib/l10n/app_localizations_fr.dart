@@ -1180,4 +1180,53 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get recentExpenseItem_mad => 'MAD';
+
+  @override
+  String get countrySelection_selectCountry => 'Sélectionner le pays';
+
+  @override
+  String get countrySelection_countryUpdated =>
+      'Pays mis à jour ! Les traditions ont été mises à jour.';
+
+  @override
+  String get countrySelection_confirmSelection => 'Confirmer la sélection';
+
+  @override
+  String get countrySelection_changeCountry => 'Changer de pays';
+
+  @override
+  String get languageSelection_selectLanguage => 'Sélectionner la langue';
+
+  @override
+  String get languageSelection_language => 'Langue';
+
+  @override
+  String get languageSelection_languageUpdated => 'Langue mise à jour';
+
+  @override
+  String get common_change => 'Changer';
+
+  @override
+  String get common_cancel => 'Annuler';
+
+  @override
+  String get common_confirm => 'Confirmer';
+
+  @override
+  String get common_close => 'Fermer';
+
+  @override
+  String get common_save => 'Enregistrer';
+
+  @override
+  String get common_edit => 'Modifier';
+
+  @override
+  String get common_delete => 'Supprimer';
+
+  @override
+  String get common_search => 'Rechercher';
+
+  @override
+  String get common_share => 'Partager';
 }

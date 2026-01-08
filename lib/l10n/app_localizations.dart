@@ -5,6 +5,7 @@ import 'package:flutter/widgets.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:intl/intl.dart' as intl;
 
+import 'app_localizations_ar.dart';
 import 'app_localizations_en.dart';
 import 'app_localizations_fr.dart';
 
@@ -94,6 +95,7 @@ abstract class AppLocalizations {
 
   /// A list of this localizations delegate's supported locales.
   static const List<Locale> supportedLocales = <Locale>[
+    Locale('ar'),
     Locale('en'),
     Locale('fr'),
   ];
@@ -2179,6 +2181,102 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'MAD'**
   String get recentExpenseItem_mad;
+
+  /// No description provided for @countrySelection_selectCountry.
+  ///
+  /// In en, this message translates to:
+  /// **'Select Country'**
+  String get countrySelection_selectCountry;
+
+  /// No description provided for @countrySelection_countryUpdated.
+  ///
+  /// In en, this message translates to:
+  /// **'Country updated! Traditions have been updated.'**
+  String get countrySelection_countryUpdated;
+
+  /// No description provided for @countrySelection_confirmSelection.
+  ///
+  /// In en, this message translates to:
+  /// **'Confirm selection'**
+  String get countrySelection_confirmSelection;
+
+  /// No description provided for @countrySelection_changeCountry.
+  ///
+  /// In en, this message translates to:
+  /// **'Change Country'**
+  String get countrySelection_changeCountry;
+
+  /// No description provided for @languageSelection_selectLanguage.
+  ///
+  /// In en, this message translates to:
+  /// **'Select Language'**
+  String get languageSelection_selectLanguage;
+
+  /// No description provided for @languageSelection_language.
+  ///
+  /// In en, this message translates to:
+  /// **'Language'**
+  String get languageSelection_language;
+
+  /// No description provided for @languageSelection_languageUpdated.
+  ///
+  /// In en, this message translates to:
+  /// **'Language updated'**
+  String get languageSelection_languageUpdated;
+
+  /// No description provided for @common_change.
+  ///
+  /// In en, this message translates to:
+  /// **'Change'**
+  String get common_change;
+
+  /// No description provided for @common_cancel.
+  ///
+  /// In en, this message translates to:
+  /// **'Cancel'**
+  String get common_cancel;
+
+  /// No description provided for @common_confirm.
+  ///
+  /// In en, this message translates to:
+  /// **'Confirm'**
+  String get common_confirm;
+
+  /// No description provided for @common_close.
+  ///
+  /// In en, this message translates to:
+  /// **'Close'**
+  String get common_close;
+
+  /// No description provided for @common_save.
+  ///
+  /// In en, this message translates to:
+  /// **'Save'**
+  String get common_save;
+
+  /// No description provided for @common_edit.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit'**
+  String get common_edit;
+
+  /// No description provided for @common_delete.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete'**
+  String get common_delete;
+
+  /// No description provided for @common_search.
+  ///
+  /// In en, this message translates to:
+  /// **'Search'**
+  String get common_search;
+
+  /// No description provided for @common_share.
+  ///
+  /// In en, this message translates to:
+  /// **'Share'**
+  String get common_share;
 }
 
 class _AppLocalizationsDelegate
@@ -2192,7 +2290,7 @@ class _AppLocalizationsDelegate
 
   @override
   bool isSupported(Locale locale) =>
-      <String>['en', 'fr'].contains(locale.languageCode);
+      <String>['ar', 'en', 'fr'].contains(locale.languageCode);
 
   @override
   bool shouldReload(_AppLocalizationsDelegate old) => false;
@@ -2201,6 +2299,8 @@ class _AppLocalizationsDelegate
 AppLocalizations lookupAppLocalizations(Locale locale) {
   // Lookup logic when only language code is specified.
   switch (locale.languageCode) {
+    case 'ar':
+      return AppLocalizationsAr();
     case 'en':
       return AppLocalizationsEn();
     case 'fr':

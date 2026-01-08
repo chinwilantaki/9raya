@@ -5,6 +5,7 @@ import 'package:sizer/sizer.dart';
 import '../../../core/app_export.dart';
 import '../../l10n/app_localizations.dart';
 import '../../providers/locale_provider.dart';
+import '../../routes/app_routes.dart';
 import '../../widgets/custom_bottom_bar.dart';
 import '../../widgets/custom_icon_widget.dart';
 import './widgets/countdown_timer_widget.dart';
@@ -139,12 +140,9 @@ class _WeddingDashboardState extends State<WeddingDashboard>
           IconButton(
             icon: const Icon(Icons.language),
             onPressed: () {
-              if (localeProvider.locale.languageCode == 'en') {
-                localeProvider.setLocale(const Locale('fr'));
-              } else {
-                localeProvider.setLocale(const Locale('en'));
-              }
+              Navigator.pushNamed(context, AppRoutes.languageSelection);
             },
+            tooltip: 'Change Language',
           ),
         ],
         bottom: TabBar(

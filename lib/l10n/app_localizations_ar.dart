@@ -4,12 +4,12 @@ import 'app_localizations.dart';
 
 // ignore_for_file: type=lint
 
-/// The translations for English (`en`).
-class AppLocalizationsEn extends AppLocalizations {
-  AppLocalizationsEn([String locale = 'en']) : super(locale);
+/// The translations for Arabic (`ar`).
+class AppLocalizationsAr extends AppLocalizations {
+  AppLocalizationsAr([String locale = 'ar']) : super(locale);
 
   @override
-  String get appTitle => 'Moroccan Wedding Planner';
+  String get appTitle => 'منظم حفلات الزفاف المغربي';
 
   @override
   String get splash_moroccanWedding => 'Moroccan Wedding';
@@ -714,49 +714,49 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get traditionsChecklist_taskMarkedAsCompleted =>
-      'Task marked as completed';
+      'تم تحديد المهمة كمكتملة';
 
   @override
-  String get traditionsChecklist_undo => 'Undo';
+  String get traditionsChecklist_undo => 'تراجع';
 
   @override
-  String get traditionsChecklist_culturalContext => 'Cultural Context';
+  String get traditionsChecklist_culturalContext => 'السياق الثقافي';
 
   @override
-  String get traditionsChecklist_recommendedTiming => 'Recommended Timing';
+  String get traditionsChecklist_recommendedTiming => 'التوقيت الموصى به';
 
   @override
-  String get traditionsChecklist_relatedVendors => 'Related Vendors';
+  String get traditionsChecklist_relatedVendors => 'البائعون ذوو الصلة';
 
   @override
-  String get traditionsChecklist_close => 'Close';
+  String get traditionsChecklist_close => 'إغلاق';
 
   @override
-  String get traditionsChecklist_traditionsChecklist => 'Traditions Checklist';
+  String get traditionsChecklist_traditionsChecklist => 'قائمة التقاليد';
 
   @override
-  String get traditionsChecklist_searchTraditions => 'Search traditions';
+  String get traditionsChecklist_searchTraditions => 'بحث عن التقاليد';
 
   @override
   String get traditionsChecklist_sharingChecklistWithFamily =>
-      'Sharing checklist with family...';
+      'مشاركة القائمة مع العائلة...';
 
   @override
-  String get traditionsChecklist_shareChecklist => 'Share checklist';
+  String get traditionsChecklist_shareChecklist => 'مشاركة القائمة';
 
   @override
   String get traditionsChecklist_checklistSyncedSuccessfully =>
-      'Checklist synced successfully';
+      'تمت مزامنة القائمة بنجاح';
 
   @override
-  String get traditionsChecklist_overallProgress => 'Overall Progress';
+  String get traditionsChecklist_overallProgress => 'التقدم العام';
 
   @override
   String get traditionsChecklist_customFamilyTraditions =>
-      'Custom Family Traditions';
+      'تقاليد العائلة المخصصة';
 
   @override
-  String get traditionsChecklist_addCustom => 'Add Custom';
+  String get traditionsChecklist_addCustom => 'إضافة مخصص';
 
   @override
   String get addCustomTraditionDialog_addCustomTradition =>
@@ -1164,51 +1164,51 @@ class AppLocalizationsEn extends AppLocalizations {
   String get recentExpenseItem_mad => 'MAD';
 
   @override
-  String get countrySelection_selectCountry => 'Select Country';
+  String get countrySelection_selectCountry => 'اختر الدولة';
 
   @override
   String get countrySelection_countryUpdated =>
-      'Country updated! Traditions have been updated.';
+      'تم تحديث الدولة! تم تحديث التقاليد.';
 
   @override
-  String get countrySelection_confirmSelection => 'Confirm selection';
+  String get countrySelection_confirmSelection => 'تأكيد الاختيار';
 
   @override
-  String get countrySelection_changeCountry => 'Change Country';
+  String get countrySelection_changeCountry => 'تغيير الدولة';
 
   @override
-  String get languageSelection_selectLanguage => 'Select Language';
+  String get languageSelection_selectLanguage => 'اختر اللغة';
 
   @override
-  String get languageSelection_language => 'Language';
+  String get languageSelection_language => 'اللغة';
 
   @override
-  String get languageSelection_languageUpdated => 'Language updated';
+  String get languageSelection_languageUpdated => 'تم تحديث اللغة';
 
   @override
-  String get common_change => 'Change';
+  String get common_change => 'تغيير';
 
   @override
-  String get common_cancel => 'Cancel';
+  String get common_cancel => 'إلغاء';
 
   @override
-  String get common_confirm => 'Confirm';
+  String get common_confirm => 'تأكيد';
 
   @override
-  String get common_close => 'Close';
+  String get common_close => 'إغلاق';
 
   @override
-  String get common_save => 'Save';
+  String get common_save => 'حفظ';
 
   @override
-  String get common_edit => 'Edit';
+  String get common_edit => 'تحرير';
 
   @override
-  String get common_delete => 'Delete';
+  String get common_delete => 'حذف';
 
   @override
-  String get common_search => 'Search';
+  String get common_search => 'بحث';
 
   @override
-  String get common_share => 'Share';
+  String get common_share => 'مشاركة';
 }

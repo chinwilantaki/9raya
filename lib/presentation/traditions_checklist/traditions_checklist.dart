@@ -1,7 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:sizer/sizer.dart';
 
 import '../../core/app_export.dart';
+import '../../data/wedding_traditions_data.dart';
+import '../../l10n/app_localizations.dart';
+import '../../providers/country_provider.dart';
+import '../../providers/locale_provider.dart';
+import '../../routes/app_routes.dart';
 import '../../widgets/custom_app_bar.dart';
 import '../../widgets/custom_bottom_bar.dart';
 import '../../widgets/custom_icon_widget.dart';
@@ -10,7 +16,7 @@ import './widgets/tradition_section_widget.dart';
 import './widgets/tradition_task_widget.dart';
 
 /// Traditions Checklist Screen
-/// Guides couples through essential Moroccan wedding customs with cultural context
+/// Guides couples through essential wedding customs with cultural context based on selected country
 class TraditionsChecklist extends StatefulWidget {
   const TraditionsChecklist({super.key});
 
@@ -24,182 +30,8 @@ class _TraditionsChecklistState extends State<TraditionsChecklist> {
   String _searchQuery = '';
   bool _isSearching = false;
 
-  // Tradition sections data with completion tracking
-  final List<Map<String, dynamic>> _traditionSections = [
-    {
-      "id": "pre_wedding",
-      "title": "طقوس ما قبل الزفاف",
-      "titleFr": "Rituels Pré-Mariage",
-      "titleEn": "Pre-Wedding Rituals",
-      "isExpanded": true,
-      "progress": 0.4,
-      "tasks": [
-        {
-          "id": "khitba",
-          "name": "الخطبة",
-          "nameFr": "Khitba (Fiançailles)",
-          "nameEn": "Khitba (Engagement)",
-          "isCompleted": true,
-          "culturalContext":
-              "Traditional engagement ceremony where families officially agree to the marriage. Includes exchange of gifts and sweets.",
-          "timing": "3-6 months before wedding",
-          "relatedVendors": ["Caterer", "Photographer"],
-        },
-        {
-          "id": "henna_prep",
-          "name": "تحضير حفل الحناء",
-          "nameFr": "Préparation Cérémonie Henné",
-          "nameEn": "Henna Ceremony Preparation",
-          "isCompleted": true,
-          "culturalContext":
-              "Sacred pre-wedding ritual where bride receives intricate henna designs. Symbolizes beauty, joy, and protection.",
-          "timing": "1-2 days before wedding",
-          "relatedVendors": ["Henna Artist", "Neggafa"],
-        },
-        {
-          "id": "hammam",
-          "name": "الحمام المغربي",
-          "nameFr": "Hammam Traditionnel",
-          "nameEn": "Traditional Hammam",
-          "isCompleted": false,
-          "culturalContext":
-              "Purification ritual at traditional bathhouse with family and friends. Includes body scrubbing and beauty treatments.",
-          "timing": "1 week before wedding",
-          "relatedVendors": ["Hammam", "Beauty Specialist"],
-        },
-        {
-          "id": "neggafa_selection",
-          "name": "اختيار النكافة",
-          "nameFr": "Sélection de la Neggafa",
-          "nameEn": "Neggafa Selection",
-          "isCompleted": false,
-          "culturalContext":
-              "Choosing the traditional wedding coordinator who manages dress changes and ceremonies throughout the wedding day.",
-          "timing": "2-3 months before wedding",
-          "relatedVendors": ["Neggafa"],
-        },
-        {
-          "id": "dress_fittings",
-          "name": "قياس الأزياء التقليدية",
-          "nameFr": "Essayages Robes Traditionnelles",
-          "nameEn": "Traditional Dress Fittings",
-          "isCompleted": false,
-          "culturalContext":
-              "Multiple fittings for the 7 traditional Moroccan wedding dresses (caftans) representing different regions.",
-          "timing": "1-2 months before wedding",
-          "relatedVendors": ["Dress Designer", "Neggafa"],
-        },
-      ],
-    },
-    {
-      "id": "wedding_day",
-      "title": "طقوس يوم الزفاف",
-      "titleFr": "Rituels Jour du Mariage",
-      "titleEn": "Wedding Day Customs",
-      "isExpanded": false,
-      "progress": 0.2,
-      "tasks": [
-        {
-          "id": "neggafa_prep",
-          "name": "تحضير النكافة",
-          "nameFr": "Préparation avec Neggafa",
-          "nameEn": "Neggafa Preparation",
-          "isCompleted": true,
-          "culturalContext":
-              "Neggafa helps bride prepare and manages the ceremonial dress changes throughout the day.",
-          "timing": "Morning of wedding",
-          "relatedVendors": ["Neggafa", "Makeup Artist"],
-        },
-        {
-          "id": "nikah",
-          "name": "عقد القران",
-          "nameFr": "Nikah (Contrat Mariage)",
-          "nameEn": "Nikah (Marriage Contract)",
-          "isCompleted": false,
-          "culturalContext":
-              "Islamic marriage contract signing ceremony with witnesses and religious officiant.",
-          "timing": "Afternoon",
-          "relatedVendors": ["Religious Officiant"],
-        },
-        {
-          "id": "zaffa",
-          "name": "الزفة",
-          "nameFr": "Zaffa (Procession)",
-          "nameEn": "Zaffa Procession",
-          "isCompleted": false,
-          "culturalContext":
-              "Grand entrance procession with traditional music, dancers, and celebration as couple enters reception.",
-          "timing": "Evening entrance",
-          "relatedVendors": ["Band", "Dancers", "Photographer"],
-        },
-        {
-          "id": "amariya",
-          "name": "العمارية",
-          "nameFr": "Amariya (Trône)",
-          "nameEn": "Amariya Throne",
-          "isCompleted": false,
-          "culturalContext":
-              "Bride and groom carried on ornate throne-like platform by family members in ceremonial procession.",
-          "timing": "During reception",
-          "relatedVendors": ["Amariya Rental", "Decorators"],
-        },
-        {
-          "id": "seven_dresses",
-          "name": "الأزياء السبعة",
-          "nameFr": "Sept Robes Traditionnelles",
-          "nameEn": "Seven Traditional Dresses",
-          "isCompleted": false,
-          "culturalContext":
-              "Bride changes into 7 different traditional caftans representing various Moroccan regions throughout the celebration.",
-          "timing": "Throughout evening",
-          "relatedVendors": ["Neggafa", "Dress Designer"],
-        },
-      ],
-    },
-    {
-      "id": "post_wedding",
-      "title": "طقوس ما بعد الزفاف",
-      "titleFr": "Rituels Post-Mariage",
-      "titleEn": "Post-Wedding Traditions",
-      "isExpanded": false,
-      "progress": 0.0,
-      "tasks": [
-        {
-          "id": "sabah",
-          "name": "صباحية",
-          "nameFr": "Sabah (Lendemain)",
-          "nameEn": "Sabah Morning After",
-          "isCompleted": false,
-          "culturalContext":
-              "Day-after celebration with close family and friends, featuring traditional breakfast and gift exchanges.",
-          "timing": "Day after wedding",
-          "relatedVendors": ["Caterer"],
-        },
-        {
-          "id": "family_visits",
-          "name": "زيارات العائلة",
-          "nameFr": "Visites Familiales",
-          "nameEn": "Family Visits",
-          "isCompleted": false,
-          "culturalContext":
-              "Newlyweds visit both families to receive blessings and gifts in the weeks following the wedding.",
-          "timing": "1-2 weeks after wedding",
-          "relatedVendors": [],
-        },
-        {
-          "id": "thank_you_gifts",
-          "name": "هدايا الشكر",
-          "nameFr": "Cadeaux de Remerciement",
-          "nameEn": "Thank You Gifts",
-          "isCompleted": false,
-          "culturalContext":
-              "Distribution of thank you gifts to guests and family members who contributed to the wedding celebration.",
-          "timing": "2-4 weeks after wedding",
-          "relatedVendors": [],
-        },
-      ],
-    },
-  ];
+  // Tradition sections data with completion tracking - loaded dynamically
+  List<Map<String, dynamic>> _traditionSections = [];
 
   // Custom traditions added by users
   final List<Map<String, dynamic>> _customTraditions = [];
@@ -212,6 +44,64 @@ class _TraditionsChecklistState extends State<TraditionsChecklist> {
   void initState() {
     super.initState();
     _searchController.addListener(_onSearchChanged);
+    _loadTraditions();
+  }
+
+  // Track current country to detect changes
+  String? _currentCountryCode;
+
+  // Helper method to get task name based on language
+  String _getTaskName(Map<String, dynamic> task, String languageCode) {
+    switch (languageCode) {
+      case 'fr':
+        return task['nameFr'] ?? task['nameEn'] ?? '';
+      case 'ar':
+        return task['name'] ?? task['nameEn'] ?? '';
+      default:
+        return task['nameEn'] ?? '';
+    }
+  }
+
+  // Load traditions based on selected country
+  void _loadTraditions() {
+    if (!mounted) return;
+    
+    final countryProvider = Provider.of<CountryProvider>(context, listen: false);
+    final countryCode = countryProvider.selectedCountry;
+    
+    // Only reload if country changed
+    if (_currentCountryCode == countryCode && _traditionSections.isNotEmpty) {
+      return;
+    }
+    
+    _currentCountryCode = countryCode;
+    final traditions = WeddingTraditionsData.getTraditionsForCountry(countryCode);
+
+    if (mounted) {
+      setState(() {
+        _traditionSections = traditions.map((section) {
+          // Initialize tasks with completion status from SharedPreferences if needed
+          final tasks = (section['tasks'] as List).map((task) {
+            return {
+              ...task,
+              'isCompleted': task['isCompleted'] ?? false,
+            };
+          }).toList();
+
+          // Calculate progress
+          final completedCount =
+              tasks.where((t) => t['isCompleted'] == true).length;
+          final progress = tasks.isEmpty ? 0.0 : completedCount / tasks.length;
+
+          return {
+            ...section,
+            'isExpanded': section['id'] == 'pre_wedding', // Expand first section by default
+            'progress': progress,
+            'tasks': tasks,
+          };
+        }).toList();
+      });
+    }
   }
 
   @override
@@ -247,11 +137,12 @@ class _TraditionsChecklistState extends State<TraditionsChecklist> {
     });
 
     // Show undo snackbar
+    final appLocalizations = AppLocalizations.of(context);
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
-        content: Text('Task marked as completed'),
+        content: Text(appLocalizations?.traditionsChecklist_taskMarkedAsCompleted ?? 'Task marked as completed'),
         action: SnackBarAction(
-          label: 'Undo',
+          label: appLocalizations?.traditionsChecklist_undo ?? 'Undo',
           onPressed: () => _toggleTaskCompletion(sectionId, taskId),
         ),
         duration: const Duration(seconds: 3),
@@ -276,14 +167,14 @@ class _TraditionsChecklistState extends State<TraditionsChecklist> {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: Text(task['nameEn'], style: theme.textTheme.titleLarge),
+        title: Text(_getTaskName(task, localeProvider.locale.languageCode), style: theme.textTheme.titleLarge),
         content: SingleChildScrollView(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             mainAxisSize: MainAxisSize.min,
             children: [
               Text(
-                'Cultural Context',
+                AppLocalizations.of(context)?.traditionsChecklist_culturalContext ?? 'Cultural Context',
                 style: theme.textTheme.titleMedium?.copyWith(
                   color: theme.colorScheme.primary,
                 ),
@@ -292,7 +183,7 @@ class _TraditionsChecklistState extends State<TraditionsChecklist> {
               Text(task['culturalContext'], style: theme.textTheme.bodyMedium),
               SizedBox(height: 2.h),
               Text(
-                'Recommended Timing',
+                AppLocalizations.of(context)?.traditionsChecklist_recommendedTiming ?? 'Recommended Timing',
                 style: theme.textTheme.titleMedium?.copyWith(
                   color: theme.colorScheme.primary,
                 ),
@@ -302,7 +193,7 @@ class _TraditionsChecklistState extends State<TraditionsChecklist> {
               if ((task['relatedVendors'] as List).isNotEmpty) ...[
                 SizedBox(height: 2.h),
                 Text(
-                  'Related Vendors',
+                  AppLocalizations.of(context)?.traditionsChecklist_relatedVendors ?? 'Related Vendors',
                   style: theme.textTheme.titleMedium?.copyWith(
                     color: theme.colorScheme.primary,
                   ),
@@ -325,7 +216,7 @@ class _TraditionsChecklistState extends State<TraditionsChecklist> {
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text('Close'),
+            child: Text(AppLocalizations.of(context)?.traditionsChecklist_close ?? 'Close'),
           ),
         ],
       ),
@@ -415,13 +306,35 @@ class _TraditionsChecklistState extends State<TraditionsChecklist> {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final localeProvider = Provider.of<LocaleProvider>(context);
+    final currentLocale = localeProvider.locale.languageCode;
     final filteredSections = _getFilteredSections();
     final overallProgress = _calculateOverallProgress();
 
-    return Scaffold(
-      backgroundColor: theme.scaffoldBackgroundColor,
-      appBar: _isSearching
-          ? CustomAppBar.search(
+    return Consumer<CountryProvider>(
+      builder: (context, countryProvider, child) {
+        // Get country name for display
+        String countryName = WeddingTraditionsData.getCountryName(
+          countryProvider.selectedCountry,
+          currentLocale,
+        );
+        final countries = WeddingTraditionsData.getAvailableCountries();
+        final selectedCountryData = countries.firstWhere(
+          (c) => c['code'] == countryProvider.selectedCountry,
+          orElse: () => countries[0],
+        );
+
+        // Check if country changed and reload traditions
+        if (_currentCountryCode != countryProvider.selectedCountry) {
+          WidgetsBinding.instance.addPostFrameCallback((_) {
+            _loadTraditions();
+          });
+        }
+
+        return Scaffold(
+          backgroundColor: theme.scaffoldBackgroundColor,
+          appBar: _isSearching
+              ? CustomAppBar.search(
               onSearchSubmitted: (query) {
                 setState(() {
                   _searchQuery = query.toLowerCase();
@@ -436,8 +349,32 @@ class _TraditionsChecklistState extends State<TraditionsChecklist> {
               },
             )
           : CustomAppBar.standard(
-              title: 'Traditions Checklist',
+              title: AppLocalizations.of(context)?.traditionsChecklist_traditionsChecklist ?? 'Traditions Checklist',
               actions: [
+                // Language selector button
+                CustomAppBarAction(
+                  icon: Icons.language,
+                  onPressed: () async {
+                    await Navigator.pushNamed(
+                      context,
+                      AppRoutes.languageSelection,
+                    );
+                  },
+                  tooltip: AppLocalizations.of(context)?.languageSelection_selectLanguage ?? 'Select Language',
+                ),
+                // Country selector button
+                CustomAppBarAction(
+                  icon: Icons.public,
+                  onPressed: () async {
+                    await Navigator.pushNamed(
+                      context,
+                      AppRoutes.countrySelection,
+                    );
+                    // Reload traditions when returning from country selection
+                    _loadTraditions();
+                  },
+                  tooltip: AppLocalizations.of(context)?.countrySelection_changeCountry ?? 'Change Country',
+                ),
                 CustomAppBarAction(
                   icon: Icons.search,
                   onPressed: () {
@@ -445,33 +382,35 @@ class _TraditionsChecklistState extends State<TraditionsChecklist> {
                       _isSearching = true;
                     });
                   },
-                  tooltip: 'Search traditions',
+                  tooltip: AppLocalizations.of(context)?.traditionsChecklist_searchTraditions ?? 'Search traditions',
                 ),
                 CustomAppBarAction(
                   icon: Icons.share,
                   onPressed: () {
                     // Share functionality for family coordination
                     ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(
-                        content: Text('Sharing checklist with family...'),
+                      SnackBar(
+                        content: Text(AppLocalizations.of(context)?.traditionsChecklist_sharingChecklistWithFamily ?? 'Sharing checklist with family...'),
                       ),
                     );
                   },
-                  tooltip: 'Share checklist',
+                  tooltip: AppLocalizations.of(context)?.traditionsChecklist_shareChecklist ?? 'Share checklist',
                 ),
               ],
             ),
-      body: RefreshIndicator(
+          body: RefreshIndicator(
         onRefresh: () async {
           // Simulate sync with family members
           await Future.delayed(const Duration(seconds: 1));
           ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Checklist synced successfully')),
+            SnackBar(
+              content: Text(AppLocalizations.of(context)?.traditionsChecklist_checklistSyncedSuccessfully ?? 'Checklist synced successfully'),
+            ),
           );
         },
         child: CustomScrollView(
           slivers: [
-            // Overall progress header
+            // Country indicator and overall progress header
             SliverToBoxAdapter(
               child: Container(
                 margin: EdgeInsets.all(4.w),
@@ -490,8 +429,47 @@ class _TraditionsChecklistState extends State<TraditionsChecklist> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
+                    // Country indicator
+                    Row(
+                      children: [
+                        Text(
+                          selectedCountryData['flag'] ?? '🌍',
+                          style: TextStyle(fontSize: 5.w),
+                        ),
+                        SizedBox(width: 2.w),
+                        Expanded(
+                          child: Text(
+                            countryName,
+                            style: theme.textTheme.titleLarge?.copyWith(
+                              color: theme.colorScheme.primary,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ),
+                        TextButton.icon(
+                          onPressed: () async {
+                            await Navigator.pushNamed(
+                              context,
+                              AppRoutes.countrySelection,
+                            );
+                            _loadTraditions();
+                          },
+                          icon: Icon(
+                            Icons.edit,
+                            size: 4.w,
+                          ),
+                          label: Text(
+                            AppLocalizations.of(context)?.common_change ?? 'Change',
+                            style: TextStyle(fontSize: 3.w),
+                          ),
+                        ),
+                      ],
+                    ),
+                    SizedBox(height: 2.h),
+                    Divider(),
+                    SizedBox(height: 2.h),
                     Text(
-                      'Overall Progress',
+                      AppLocalizations.of(context)?.traditionsChecklist_overallProgress ?? 'Overall Progress',
                       style: theme.textTheme.titleMedium,
                     ),
                     SizedBox(height: 2.h),
@@ -562,7 +540,7 @@ class _TraditionsChecklistState extends State<TraditionsChecklist> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        'Custom Family Traditions',
+                        AppLocalizations.of(context)?.traditionsChecklist_customFamilyTraditions ?? 'Custom Family Traditions',
                         style: theme.textTheme.titleLarge?.copyWith(
                           color: theme.colorScheme.primary,
                         ),
@@ -594,21 +572,23 @@ class _TraditionsChecklistState extends State<TraditionsChecklist> {
 
             // Bottom spacing
             SliverToBoxAdapter(child: SizedBox(height: 10.h)),
-          ],
+            ],
+          ),
         ),
+        floatingActionButton: FloatingActionButton.extended(
+          onPressed: _showAddCustomTraditionDialog,
+          icon: CustomIconWidget(
+            iconName: 'add',
+            color: theme.colorScheme.onSecondary,
+            size: 24,
+          ),
+        label: Text(AppLocalizations.of(context)?.traditionsChecklist_addCustom ?? 'Add Custom'),
       ),
-      floatingActionButton: FloatingActionButton.extended(
-        onPressed: _showAddCustomTraditionDialog,
-        icon: CustomIconWidget(
-          iconName: 'add',
-          color: theme.colorScheme.onSecondary,
-          size: 24,
+        bottomNavigationBar: const CustomBottomBar(
+          currentRoute: '/traditions-checklist',
         ),
-        label: const Text('Add Custom'),
-      ),
-      bottomNavigationBar: const CustomBottomBar(
-        currentRoute: '/traditions-checklist',
-      ),
+      );
+    },
     );
   }
 }
